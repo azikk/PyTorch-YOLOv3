@@ -7,3 +7,9 @@ tensorboard
 terminaltables
 pillow
 tqdm
+
+
+python3 train.py --model_def config/yolov3-custom_1.cfg --data_config config/custom.data --pretrained_weights weights/yolov3.weights 
+
+python3 detect.py --model_def config/yolov3-custom_1.cfg --class_path ./data/custom/classes.names --weights_path ./checkpoints/yolov3_ckpt_9.pth --image_folder data/samples/
+

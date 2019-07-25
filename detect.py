@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.ticker import NullLocator
 
+os.environ["CUDA_VISIBLE_DEVICES"] = '1'
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--image_folder", type=str, default="data/samples", help="path to dataset")
@@ -37,6 +39,7 @@ if __name__ == "__main__":
     print(opt)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print('********************{}***************'.format(device))
 
     os.makedirs("output", exist_ok=True)
 
@@ -111,31 +114,32 @@ if __name__ == "__main__":
             n_cls_preds = len(unique_labels)
             bbox_colors = random.sample(colors, n_cls_preds)
             for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
-
+		
                 print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
+                print(int(cls_pred))
+                if classes[int(cls_pred)] == 'person':
+                    box_w = x2 - x1
+                    box_h = y2 - y1
 
-                box_w = x2 - x1
-                box_h = y2 - y1
-
-                color = bbox_colors[int(np.where(unique_labels == int(cls_pred))[0])]
-                # Create a Rectangle patch
-                bbox = patches.Rectangle((x1, y1), box_w, box_h, linewidth=2, edgecolor=color, facecolor="none")
-                # Add the bbox to the plot
-                ax.add_patch(bbox)
-                # Add label
-                plt.text(
-                    x1,
-                    y1,
-                    s=classes[int(cls_pred)],
-                    color="white",
-                    verticalalignment="top",
-                    bbox={"color": color, "pad": 0},
-                )
+                    color = bbox_colors[int(np.where(unique_labels == int(cls_pred))[0])]
+                    # Create a Rectangle patch
+                    bbox = patches.Rectangle((x1, y1), box_w, box_h, linewidth=2, edgecolor=color, facecolor="none")
+                    # Add the bbox to the plot
+                    ax.add_patch(bbox)
+                    # Add label
+                    plt.text(
+                        x1,
+                        y1,
+                        s=classes[int(cls_pred)],
+                        color="white",
+                        verticalalignment="top",
+                        bbox={"color": color, "pad": 0},
+                    )
 
         # Save generated image with detections
         plt.axis("off")
         plt.gca().xaxis.set_major_locator(NullLocator())
         plt.gca().yaxis.set_major_locator(NullLocator())
         filename = path.split("/")[-1].split(".")[0]
-        plt.savefig(f"output/{filename}.png", bbox_inches="tight", pad_inches=0.0)
+        plt.savefig(f"output/{filename}.png",bbox_inches="tight", pad_inches=0.0)
         plt.close()
