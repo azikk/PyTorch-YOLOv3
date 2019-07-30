@@ -130,7 +130,7 @@ if __name__ == "__main__":
                     plt.text(
                         x1,
                         y1,
-                        s=classes[int(cls_pred)],
+                        s="%s,%.2f" % (classes[int(cls_pred)], cls_conf.item()),
                         color="white",
                         verticalalignment="top",
                         bbox={"color": color, "pad": 0},
